@@ -1,16 +1,16 @@
 #include <Arduino.h>
 #include <WiFi.h>
-#include <PubSubClient.h> 
+#include <PubSubClient.h>
+
 #include "iot.h"
 #include "senhas.h"
 #include "saidas.h"
 
 // Definição dos tópicos de inscrição
-#define mqtt_topic1 "projetoProfessor/led1"
-#define mqtt_topic2 "projetoProfessor/led2"
+#define mqtt_topic1 "projeto_integrado/SENAI134/Cienciadedados/controle"
 
 // Definição do ID do cliente MQTT randomico
-const String cliente_id = "ESP32Client" + String(random(0xffff), HEX);
+const String cliente_id = "ESP32Clientsenai" + String(random(0xffff), HEX);
 
 // Definição dos dados de conexão
 WiFiClient espClient;
@@ -96,16 +96,41 @@ void publica_mqtt(String topico, String msg)
 {
   client.publish(topico.c_str(), msg.c_str());
 }
-
+byte sinal()
+{
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    int rssi = WiFi.RSSI();
+    if (rssi > -50)
+    {
+      return 4;
+    }
+    else if (rssi > -60)
+    {
+      return 3;
+    }
+    else if (rssi > -70)
+    {
+      return 2;
+    }
+    else if (rssi > -80)
+    {
+      return 1;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+}
 //!----------------------------------------
-//TODO Alterar a programação apartir daqui
+// TODO Alterar a programação apartir daqui
 //!----------------------------------------
 
 // Inscreve nos tópicos MQTT
 void inscricao_topicos()
 {
   client.subscribe(mqtt_topic1);
-  client.subscribe(mqtt_topic2);
 }
 
 // Trata as mensagens recebidas
@@ -131,25 +156,4 @@ void tratar_msg(char *topic, String msg)
       Serial.println("Comando desconhecido");
     }
   }
-   // Tratamento do tópico 2
-  else if (strcmp(topic, mqtt_topic2) == 0)
-  {
-    if (msg == "liga")
-    {
-      LedExternoState = true;
-    }
-    else if (msg == "desliga")
-    {
-      LedExternoState = false;
-    }
-    else if (msg == "alterna")
-    {
-      LedExternoState = !LedExternoState;
-    }
-    else
-    {
-      Serial.println("Comando desconhecido");
-    }
-  }
-
 }
