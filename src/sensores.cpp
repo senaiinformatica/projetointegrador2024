@@ -18,7 +18,7 @@ float sensores_get_presion() {
 }
 
 float sensores_get_altitud() {
-  return bmp.readAltitude(925.94); // Ajuste o valor de pressão para o nível do mar
+  return bmp.readAltitude(1020); // Ajuste o valor de pressão para o nível do mar
 }
 
 

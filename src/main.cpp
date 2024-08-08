@@ -52,9 +52,11 @@ void loop()
   float pressureRead = sensores_get_presion();
   float altitudeRead = sensores_get_altitud();
 
-  doc["temperature"] = temperatureRead;
-  doc["pressure"] = pressureRead;
-  doc["altitude"] = altitudeRead;
+  //temperatura com 2 casas decimais
+
+  doc["temperature"] = round(temperatureRead * 100.0) / 100.0;
+  doc["pressure"] = round(pressureRead * 100.0) / 100.0;
+  doc["altitude"] = round(altitudeRead * 100.0) / 100.0;
 
   String json;
   serializeJson(doc, json);
