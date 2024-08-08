@@ -19,14 +19,13 @@
 #include "saidas.h"
 #include "entradas.h"
 #include "tempo.h"
+#include "sensores.h"
+#include <ArduinoJson.h>
 
 //Definição dos tópicos de publicação
-#define mqtt_pub_topic1 "projetoProfessor/led1"
+#define mqtt_pub_topic1 "projeto_integrado/SENAI134/Cienciadedados/GrupoX"
 
-
-//Protótipos das funções do main.cpp
-void acao_botao_boot();
-void acao_botao_externo();
+JsonDocument doc;
 
 //Variáveis globais
 
@@ -39,6 +38,7 @@ void setup()
   inicializa_entradas();
   inicializa_saidas();
   inicializa_mqtt();
+  sensores_init();
 }
 
 void loop()
@@ -47,27 +47,20 @@ void loop()
   atualiza_saidas();
   atualiza_botoes();
   atualiza_mqtt();
-  acao_botao_boot();
-  acao_botao_externo();
+
+  float temperatureRead = sensores_get_temperatura();
+  float pressureRead = sensores_get_presion();
+  float altitudeRead = sensores_get_altitud();
+
+  doc["temperature"] = temperatureRead;
+  doc["pressure"] = pressureRead;
+  doc["altitude"] = altitudeRead;
+
+  String json;
+  serializeJson(doc, json);
+
+  publica_mqtt(mqtt_pub_topic1, json);
+  delay(1000);
 }
 
 
-//Função que verifica se o botão foi pressionado e sua ação
-void acao_botao_boot()
-{
-  if (botao_boot_pressionado())
-  {
-    LedBuiltInState = !LedBuiltInState;
-    if(LedBuiltInState) publica_mqtt(mqtt_pub_topic1, "LIGADO" );
-    else publica_mqtt(mqtt_pub_topic1, "DESLIGADO");
-  }
-}
-
-void acao_botao_externo()
-{
-  
-  if(botao_externo_pressionado())
-  {
-    LedExternoState = !LedExternoState;
-  }
-}

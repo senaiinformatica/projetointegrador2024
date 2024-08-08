@@ -4,9 +4,8 @@
 Adafruit_BMP280 bmp;
 
 void sensores_init() {
-  if (!bmp.begin()) {
+  if (!bmp.begin(0x76)) {
     Serial.println(F("Could not find a valid BMP280 sensor, check wiring!"));
-    while (1);
   }
 }
 
@@ -19,7 +18,7 @@ float sensores_get_presion() {
 }
 
 float sensores_get_altitud() {
-  return bmp.readAltitude(1013.25);
+  return bmp.readAltitude(925.94); // Ajuste o valor de pressão para o nível do mar
 }
 
 
