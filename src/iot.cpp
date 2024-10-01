@@ -1,10 +1,12 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
-
+#include <ArduinoJson.h>
 #include "iot.h"
 #include "senhas.h"
 #include "saidas.h"
+#include "tempo.h"
+
 
 // Definição dos tópicos de inscrição
 #define mqtt_topic1 "projeto_integrado/SENAI134/Cienciadedados/controle"
@@ -139,21 +141,14 @@ void tratar_msg(char *topic, String msg)
   // Tratamento do tópico 1
   if (strcmp(topic, mqtt_topic1) == 0)
   {
-    if (msg == "liga")
+    JsonDocument doc;
+    deserializeJson(doc, msg);
+    if (doc.containsKey("freqEnvSec")) //tem o campo token?
     {
-      LedBuiltInState = true;
+
+      timerDelay = int(doc["freqEnvSec"]) * 1000;
+      salvarValor();
     }
-    else if (msg == "desliga")
-    {
-      LedBuiltInState = false;
-    }
-    else if (msg == "alterna")
-    {
-      LedBuiltInState = !LedBuiltInState;
-    }
-    else
-    {
-      Serial.println("Comando desconhecido");
-    }
+
   }
 }

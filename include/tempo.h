@@ -1,9 +1,9 @@
 #pragma once
 
-
+extern unsigned long timerDelay;
 //Retorna a hora atual no formato hh:mm:ss
 void hora_certa();
-
+void salvarValor();
 /*
 @brief Retorna tempo no formato POSIX
 @return tempo no formato POSIX

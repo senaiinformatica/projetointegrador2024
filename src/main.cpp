@@ -21,16 +21,18 @@
 #include "entradas.h"
 #include "tempo.h"
 #include "sensores.h"
+#include <Preferences.h>
 
 // Definição dos tópicos de publicação
 #define mqtt_pub_topic1 "projeto_integrado/SENAI134/Cienciadedados/GrupoX"
 
 JsonDocument doc;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
+Preferences preferences;
 
 // Variáveis globais
 unsigned long lastTime = 0;
-const unsigned long timerDelay = 1000;
+unsigned long timerDelay = 1000 * 60 * 3;
 
 void sensores();
 void envia_dados();
@@ -47,6 +49,10 @@ void setup()
   inicializa_saidas();
   inicializa_mqtt();
   sensores_init();
+  
+
+  preferences.begin("valor", false);
+  timerDelay = preferences.getUInt("timerDelay", 1000);
 
   int melody[] = {
       440, 440, 440, 349, 523, 440, 349, 523, 440,
@@ -91,6 +97,7 @@ void sensores()
   doc["humidity"] = round(humityRead * 1.0);
   doc["CO2"] = round(sensores_get_gas() * 100.0) / 100.0;
   doc["timestamp"] = timeStamp();
+  doc["tempoDelay"] = timerDelay / 1000;
 }
 
 void envia_dados()
@@ -201,4 +208,9 @@ void atualiza_display()
     lcd.setCursor(15, 1);
     lcd.write(byte(4));
   }
+}
+
+void salvarValor()
+{
+  preferences.putUInt("timerDelay", timerDelay);
 }
